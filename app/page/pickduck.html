@@ -1,0 +1,29 @@
+<div style="display:none;" id='modal'>
+    <!--背景虚化-->
+    <div class="alert-modal">
+        <!--静态框主体-->
+        <div class="modal" id='mainmodal'>
+            <!--内容-->
+            <div class="text-modal" style="overflow: auto;text-overflow:ellipsis;">
+                <p id="title">标题</p>
+                <span id="text" style="white-space: pre-line;">主体内容</span>
+
+                <input type="text" class="input-text" id="textplay" placeholder="请输入内容..."
+                    style="display:none;padding: 0px 0px 0px 10px;">
+            </div>
+            <!--底部按钮-->
+            <div class="button-modal">
+                <div class="left-button">
+                    <a id="a-left"><button class="modal-button" id="text-left" onclick="pimodal();">了解更多</button></a>
+                </div>
+                <div class="right-button">
+                    <button class="modal-button modal-button--cancel" onclick="pimodal();" id="text-right2">取消</button>
+                    <a id="a-right"><button class="modal-button modal-button-confirm" onclick="pimodal();"
+                            id="text-right">积极按钮</button></a>
+                    <a onclick="" id="text-right-form-s" style="display:none"><button
+                            class="modal-button modal-button-confirm" onclick="pimodal();">提交</button></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

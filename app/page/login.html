@@ -1,0 +1,290 @@
+<!--<div class="login_dialog">
+	<div class="login_dialog_close">×</div>
+	<div class="login_dialog_title">登录</div>
+	<div class="login_dialog_content">
+		<div class="login_dialog_content_login">
+			<input type="email" id="bluestar_password_store" placeholder="邮箱" error_text="验证码逝世">
+			<input type="password" id="bluestar_password_store" placeholder="密码">
+			<button>登录</button>
+			<p style="color: red;width:350px">* 若您是在幻梦体系注册的用户，没有绑定邮箱的请输入您的训练师编号就好了<br>若您没有密码请输入123456<br>如果您用同一个邮箱同时在幻梦和本网站注册了账号，密码请以本网站的为准</p>
+			<div>未有账号？去注册！</div>
+		</div>
+		<div class="login_dialog_content_logon">
+			<input type="email" id="bluestar_password_store" placeholder="邮箱">
+			<input type="password" id="bluestar_password_store" placeholder="密码">
+			<div class="login_dialog_content_logon_verification">
+				<input type="text" placeholder="验证码">
+				<button>发送验证码</button>
+			</div>
+			<input type="text" placeholder="昵称（不输入则生成昵称）">
+			<button>注册</button>
+			<div>已有账号？去登录！</div>
+		</div>
+	</div>
+</div>
+<script>
+	!function () {
+		var input_error_list = [];
+		function add_mask() {
+			var element = document.createElement("div");
+			element.classList.add("app_mask");
+			document.body.append(element);
+			var onclick_list = [];
+			var root = {
+				element,
+				closed: false,
+				close: function () {
+					this.closed = true;
+					element.classList.remove("app_mask_display");
+					setTimeout(() => {
+						element.remove();
+					}, 300);
+				},
+				onclick: function (callback) {
+					onclick_list.push(callback);
+				}
+			};
+			setTimeout(() => {
+				element.classList.add("app_mask_display");
+			}, 100);
+			element.addEventListener("click", function (event) {
+				onclick_list.forEach((callback) => {
+					callback(event);
+				});
+			});
+			return root;
+		};
+
+		function add_msg(text) {
+			var element = document.createElement("div");
+			element.classList.add("app_amsg");
+			element.innerText = text;
+			$(".app_msg").append(element);
+			var onclick_list = [];
+			var root = {
+				element,
+				closed: false,
+				close: function () {
+					this.closed = true;
+					element.classList.remove("app_amsg_display");
+					setTimeout(() => {
+						element.remove();
+					}, 300);
+				},
+				onclick: function (callback) {
+					onclick_list.push(callback);
+				}
+			};
+			setTimeout(() => {
+				element.classList.add("app_amsg_display");
+			}, 100);
+			setTimeout(() => {
+				root.close();
+			}, 5000);
+			element.addEventListener("click", function (event) {
+				onclick_list.forEach((callback) => {
+					callback(event);
+				});
+			});
+			return root;
+		};
+
+		function add_input_error(input_element, text) {
+			var element = document.createElement("div");
+			element.classList.add("login_dialog_content_inputerror");
+			element.innerText = text;
+			var top = input_element.offsetTop;
+			var left = input_element.offsetLeft;
+			var height = input_element.offsetHeight;
+			element.style.top = (top + height) + "px";
+			element.style.left = (left + 20) + "px";
+			$(".login_dialog").append(element);
+			var root = {
+				element,
+				closed: false,
+				close: function () {
+					this.closed = true;
+					element.remove();
+				}
+			};
+			input_error_list.push(root);
+			return root;
+		};
+
+		function clear_all_input_error() {
+			input_error_list.forEach((root) => {
+				root.close();
+			});
+		};
+
+		function disable_login_buttons_and_inputs(boole) {
+			$(".login_dialog_content button,.login_dialog_content input").each((id, element) => {
+				element[(boole ? "set" : "remove") + "Attribute"]("disabled", "");
+			});
+		};
+
+		$(".app_header_login").on("click", function () {
+			$(".login_dialog_content_login").css("height", "");
+			$(".login_dialog_content_logon").css("height", "0px");
+			$(".login_dialog_content input").each((id, element) => {
+				element.value = "";
+			});
+			$(".login_dialog_title").text("登录");
+			clear_all_input_error();
+			var mask = add_mask();
+			$(".login_dialog").addClass("login_dialog_show");
+			mask.onclick(function () {
+				mask.close();
+				$(".login_dialog").removeClass("login_dialog_show");
+			});
+			$(".login_dialog_close").on("click", function () {
+				if (!mask.closed) {
+					mask.close();
+					$(".login_dialog").removeClass("login_dialog_show");
+				}
+			});
+		});
+
+		$($(".login_dialog_content > div > div:not(.login_dialog_content_logon_verification)")[0]).on("click", function () {
+			$(".login_dialog_content_logon").css("height", "");
+			$(".login_dialog_content_login").css("height", "0px");
+			$(".login_dialog_content input").each((id, element) => {
+				element.value = "";
+			});
+			$(".login_dialog_title").text("注册");
+			clear_all_input_error();
+		});
+
+		$($(".login_dialog_content > div > div:not(.login_dialog_content_logon_verification)")[1]).on("click", function () {
+			$(".login_dialog_content_login").css("height", "");
+			$(".login_dialog_content_logon").css("height", "0px");
+			$(".login_dialog_content input").each((id, element) => {
+				element.value = "";
+			});
+			$(".login_dialog_title").text("登录");
+			clear_all_input_error();
+		});
+
+
+		$(".login_dialog_content_login > button").on("click", function () {
+			disable_login_buttons_and_inputs(true);
+			setTimeout(() => {
+				var email = $(".login_dialog_content_login input")[0].value;
+				var passowrd = $(".login_dialog_content_login input")[1].value;
+				if (email) {
+					// if (/\w[-\w.+]*@([A-Za-z0-9][-A-Za-z0-9]+\.)+[A-Za-z]{2,14}/.test(email)) {
+						if (passowrd) {
+							$.get("./?path=function&page=login&email=" + email + "&password=" + passowrd, function (data) {
+								var code = JSON.parse(data).code;
+								if (Number(code) == 200) {                        
+									add_msg("登录成功");
+									location.reload();
+								} else if (code == 400) {
+									add_input_error($(".login_dialog_content_login input")[0], "用户不存在或密码错误");
+								} else if (code == 404) {
+									add_input_error($(".login_dialog_content_login input")[0], "用户不存在或密码错误");
+								}
+								disable_login_buttons_and_inputs(false);
+							});
+						} else {
+							add_input_error($(".login_dialog_content_login input")[1], "请输入密码");
+							disable_login_buttons_and_inputs(false);
+						}
+					//} else {
+					//	add_input_error($(".login_dialog_content_login input")[0], "邮箱格式不正确");
+					//	disable_login_buttons_and_inputs(false);
+					//}
+				} else {
+					add_input_error($(".login_dialog_content_login input")[0], "请输入邮箱");
+					disable_login_buttons_and_inputs(false);
+				};
+			}, 100)
+		});
+
+		$(".login_dialog_content_logon_verification > button").on("click", function () {
+			disable_login_buttons_and_inputs(true);
+			setTimeout(() => {
+				var email = $(".login_dialog_content_logon input")[0].value;
+				if (email) {
+					if (/\w[-\w.+]*@([A-Za-z0-9][-A-Za-z0-9]+\.)+[A-Za-z]{2,14}/.test(email)) {
+						$(this).text("发送中");
+						$.get("./?path=function&page=code&mode=send&to=" + email, function (data, status) {
+							$(".login_dialog_content_logon_verification > button").text("发送验证码");
+							if (Number(data.code) == 200 && status == "success") {
+								add_msg("发送成功！若没有收到请查看垃圾箱哦~")
+								disable_login_buttons_and_inputs(false);
+							} else {
+								add_msg("发送失败！可以稍等一会儿再发哦~")
+								disable_login_buttons_and_inputs(false);
+							}
+						});
+					} else {
+						add_input_error($(".login_dialog_content_login input")[0], "邮箱格式不正确");
+						disable_login_buttons_and_inputs(false);
+					}
+				} else {
+					add_input_error($(".login_dialog_content_login input")[0], "请输入邮箱");
+					disable_login_buttons_and_inputs(false);
+				};
+			}, 100)
+		});
+
+		$(".login_dialog_content_logon > button").on("click", function () {
+			disable_login_buttons_and_inputs(true);
+			var email = $(".login_dialog_content_logon input")[0].value;
+			var password = $(".login_dialog_content_logon input")[1].value;
+			var verification = $(".login_dialog_content_logon input")[2].value;
+			var name = $(".login_dialog_content_logon input")[3].value;
+			setTimeout(() => {
+				if (email) {
+					if (/\w[-\w.+]*@([A-Za-z0-9][-A-Za-z0-9]+\.)+[A-Za-z]{2,14}/.test(email)) {
+						if (password) {
+							if (verification) {
+								$.get("./?path=function&page=signup&email=" + email + "&text=" + verification + "&password=" + password+"&name="+name, function (data) {
+									var code = JSON.parse(data).code;
+									if (code == 200) {
+										location.reload();
+									} else if (code == 502) {
+										add_input_error($(".login_dialog_content_logon input")[0], "该邮箱已被注册");
+										disable_login_buttons_and_inputs(false);
+									} else if (code == 402) {
+										add_input_error($(".login_dialog_content_logon input")[2], "验证码不存在或已过时");
+										disable_login_buttons_and_inputs(false);
+									} else if (code == 401) {
+										add_input_error($(".login_dialog_content_logon input")[2], "验证码不存在或已过时");
+										disable_login_buttons_and_inputs(false);
+									} else if (code == 404) {
+										add_input_error($(".login_dialog_content_logon input")[2], "验证码不存在或已过时");
+										disable_login_buttons_and_inputs(false);
+									}
+								});
+							} else {
+								add_input_error($(".login_dialog_content_logon input")[2], "请输入验证码");
+								disable_login_buttons_and_inputs(false);
+							}
+						} else {
+							add_input_error($(".login_dialog_content_logon input")[1], "请输入密码");
+							disable_login_buttons_and_inputs(false);
+						}
+					} else {
+						add_input_error($(".login_dialog_content_logon input")[0], "邮箱格式不正确");
+						disable_login_buttons_and_inputs(false);
+					}
+				} else {
+					add_input_error($(".login_dialog_content_logon input")[0], "请输入邮箱");
+					disable_login_buttons_and_inputs(false);
+				}
+			}, 100)
+		});
+
+
+		$(".login_dialog_content").on("click", function () {
+			clear_all_input_error();
+		});
+	}()
+</script>-->
+<script>
+	$(".app_header_login").on("click", function () {
+		location.href = "?path=page&page=login&goto=" + encodeURIComponent(location.search.slice(1))
+	});
+</script>
